@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 from django.shortcuts import reverse
+
 
 # Create your models here.
 CATEGORY_CHOICES = (
@@ -28,7 +30,7 @@ class Slide(models.Model):
     link = models.CharField(max_length=100)
     image = models.ImageField(help_text="Size: 1920x570")
     is_active = models.BooleanField(default=True)
-
+    
     def __str__(self):
         return "{} - {}".format(self.caption1, self.caption2)
 
@@ -113,18 +115,18 @@ class Order(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
-    # shipping_address = models.ForeignKey(
-    #     'BillingAddress', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
-    # billing_address = models.ForeignKey(
-    #     'BillingAddress', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
-    # payment = models.ForeignKey(
-    #     'Payment', on_delete=models.SET_NULL, blank=True, null=True)
-    # coupon = models.ForeignKey(
-    #     'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
-    # being_delivered = models.BooleanField(default=False)
-    # received = models.BooleanField(default=False)
-    # refund_requested = models.BooleanField(default=False)
-    # refund_granted = models.BooleanField(default=False)
+    shipping_address = models.ForeignKey(
+        'BillingAddress', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
+    billing_address = models.ForeignKey(
+        'BillingAddress', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+    payment = models.ForeignKey(
+        'Payment', on_delete=models.SET_NULL, blank=True, null=True)
+    coupon = models.ForeignKey(
+        'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
+    being_delivered = models.BooleanField(default=False)
+    received = models.BooleanField(default=False)
+    refund_requested = models.BooleanField(default=False)
+    refund_granted = models.BooleanField(default=False)
 
     '''
     1. Item added to cart
@@ -148,3 +150,47 @@ class Order(models.Model):
         return total
 
 
+class BillingAddress(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    street_address = models.CharField(max_length=100)
+    apartment_address = models.CharField(max_length=100)
+    #country = CountryField(multiple=False)
+    zip = models.CharField(max_length=100)
+    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        verbose_name_plural = 'BillingAddresses'
+
+
+class Payment(models.Model):
+    stripe_charge_id = models.CharField(max_length=50)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, blank=True, null=True)
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=15)
+    amount = models.FloatField()
+
+    def __str__(self):
+        return self.code
+
+
+class Refund(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    reason = models.TextField()
+    accepted = models.BooleanField(default=False)
+    email = models.EmailField()
+
+    def __str__(self):
+        return f"{self.pk}"
