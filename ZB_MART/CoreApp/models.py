@@ -47,7 +47,7 @@ class Category(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("CoreAppApp:category", kwargs={
+        return reverse("CoreApp:category", kwargs={
             'slug': self.slug
         })
 
@@ -69,20 +69,20 @@ class Item(models.Model):
     def __str__(self):
         return self.title
 
-    def get_absolute_url(self):
-        return reverse("CoreAppApp:product", kwargs={
-            'slug': self.slug
-        })
+    # def get_absolute_url(self):
+    #     return reverse("CoreApp:product", kwargs={
+    #         'slug': self.slug
+    #     })
 
-    def get_add_to_cart_url(self):
-        return reverse("CoreAppApp:add-to-cart", kwargs={
-            'slug': self.slug
-        })
+    # def get_add_to_cart_url(self):
+    #     return reverse("CoreApp:add-to-cart", kwargs={
+    #         'slug': self.slug
+    #     })
 
-    def get_remove_from_cart_url(self):
-        return reverse("CoreAppApp:remove-from-cart", kwargs={
-            'slug': self.slug
-        })
+    # def get_remove_from_cart_url(self):
+    #     return reverse("CoreApp:remove-from-cart", kwargs={
+    #         'slug': self.slug
+    #     })
 
 
 class OrderItem(models.Model):

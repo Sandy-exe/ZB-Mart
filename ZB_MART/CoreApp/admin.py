@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from .models import Item, OrderItem, Order, Category, Slide
+
+
 # Register your models here.
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user',
