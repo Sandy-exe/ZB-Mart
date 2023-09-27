@@ -3170,7 +3170,6 @@ TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT
 	font-size: 13px;
 	color: white;
 	line-height: 1.8;
-	text-decoration: underline;
 }
 
 /*[ M-Text 16 - 30 ]
@@ -3226,7 +3225,7 @@ TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT
 	font-size: 16px;
 	color: #555555;
 	text-transform: uppercase;
-	text-decoration: line-through;
+
 }
 
 .m-text8 {
@@ -3963,13 +3962,12 @@ EFFECT   EFFECT   EFFECT   EFFECT   EFFECT   EFFECT  EFFECT
 ///////////////////////////////////////////////////////////
 */
 .hov1:hover {
-    background-color: #e65540;
+    background-color: #7de640;
   	color: white;
 }
 
 .hov2:hover {
 	color: white;
-	text-decoration: underline;
 }
 
 .hov3:hover {
@@ -3991,7 +3989,6 @@ EFFECT   EFFECT   EFFECT   EFFECT   EFFECT   EFFECT  EFFECT
 
 .hov6:hover {
 	color: white;
-	text-decoration: underline;
 }
 
 /*[ Active ]

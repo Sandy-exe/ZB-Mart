@@ -114,8 +114,7 @@ a:focus {
 }
 
 a:hover {
-	text-decoration: none;
-	color: #e65540;
+	color: #000000;
 }
 
 /* ------------------------------------ */
@@ -618,6 +617,10 @@ iframe {
   transition: all 0.3s;
 }
 
+.wrap_menu{
+  text-decoration: none;
+}
+
 .fixed-header .wrap_header {
   height: 65px;
 }
@@ -675,11 +678,10 @@ iframe {
 }
 
 li.sale-noti > a {
-  color: #e65540;
+  color: #000000;
 }
 
 .main_menu > li:hover > a {
-  text-decoration: none;
   border-bottom: 1px solid #333333;
 }
 
@@ -737,7 +739,6 @@ li.sale-noti > a {
 
 .sub_menu > li:hover > a {
   color: #e65540;
-  text-decoration: none;
 }
 
 /* ------------------------------------ */
@@ -1111,7 +1112,6 @@ li.sale-noti > a {
 }
 
 .side-menu .sub-menu a:hover {
-  text-decoration: none;
   padding-left: 20px;
   color: #e65540 !important;
 }

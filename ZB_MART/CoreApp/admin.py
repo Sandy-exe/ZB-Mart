@@ -7,13 +7,9 @@ from .models import Item, OrderItem, Order, Category, Slide
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user',
                     'ordered',
-                    'being_delivered',
-                    'received',
                     ]
     list_filter = ['user',
-                   'ordered',
-                   'being_delivered',
-                   'received']
+                   'ordered',]
     search_fields = [
         'user__username',
         'ref_code'
