@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style type="text/css">
+    input {
+
+        border: 1px solid #ced4da !important;
+
+    }
+</style>
+
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-6 mt-5 offset-3">
+            <h1>Login In</h1>
+
+            <p>Don't have an account? Then please <a href="">Sign Up</a></p>
+
+            <form class="Login" id="Login_form" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary"></button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

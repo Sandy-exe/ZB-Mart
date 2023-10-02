@@ -121,16 +121,6 @@ class Order(models.Model):
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
 
-    '''
-    1. Item added to cart
-    2. Adding a BillingAddress
-    (Failed Checkout)
-    3. Payment
-    4. Being delivered
-    5. Received
-    6. Refunds
-    '''
-
     def __str__(self):
         return self.user.username
 
