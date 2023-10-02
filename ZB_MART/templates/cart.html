@@ -15,9 +15,10 @@
 				<thead>
 					<tr>
 						<th scope="col">#</th>
+						<th scope="col"></th>
 						<th scope="col">Product Name</th>
 						<th scope="col">Price</th>
-						<th scope="col">Qty</th>
+						<th scope="col" class="pl-4">Qty</th>
 						<th scope="col">Total Price</th>
 					</tr>
 				</thead>
@@ -62,9 +63,8 @@
 				</tr>
 				<tr>
 					<td colspan="5">
-						<a href="/checkout" class="btn btn-warning float-right ml-2">Checkout</a>
-						<a href="/" class="btn btn-primary float-right">Continue Shopping</a>
-
+						<a href="{% url 'CoreApp:cart' %}" class="btn btn-warning float-right ml-2">Checkout</a>
+						<a href="{% url 'CoreApp:shop' %}" class="btn btn-primary float-right">Continue Shopping</a>
 					</td>
 				</tr>
 				{% endif %}

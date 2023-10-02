@@ -13,29 +13,46 @@ import time
 
 
 class HomeView(ListView):
-    template_name = "index.html"
-    queryset = Item.objects.filter(is_active=True)
-    context_object_name = 'items'
-
-
-class ItemDetailView(DetailView):
-    model = Item
-    template_name = "product-detail.html"
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            item = Item.objects.filter(is_active=True)
+            context = {
+                'object': order,
+                'items': item
+            }
+            return render(self.request, 'index.html', context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an active order")
+            return redirect("/")
 
 class ShopView(ListView):
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            item = Item.objects.filter(is_active=True)
+            context = {
+                'object': order,
+                'object_list': item,
+            }
+            return render(self.request, 'shop.html', context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an active order")
+            return redirect("/")
     model = Item
     paginate_by = 6
-    template_name = "shop.html"
 
 class CategoryView(View):
     def get(self, *args, **kwargs):
         category = Category.objects.get(slug=self.kwargs['slug'])
         item = Item.objects.filter(category=category, is_active=True)
+        order = Order.objects.get(user=self.request.user, ordered=False)
         context = {
             'object_list': item,
             'category_title': category,
             'category_description': category.description,
-            'category_image': category.image
+            'category_image': category.image,
+            'object': order
         }
         return render(self.request, "category.html", context)
 class Cartview(LoginRequiredMixin, View):
@@ -60,19 +77,20 @@ def add_to_cart(request, slug):
         ordered=False
     )
     print(order_item)
+
     order_qs = Order.objects.filter(user=request.user, ordered=False)
-    print(request.META.get('HTTP_REFERER'))
     if order_qs.exists():
         order = order_qs[0]
         if order.items.filter(item__slug=item.slug).exists():
-            order_item.quantity += 1
-            order_item.save()
+            order_item_in_cart = order.items.filter(item__slug=item.slug)[0]
+            order_item_in_cart.quantity += 1
+            order_item_in_cart.save()
             messages.info(request, "Item qty was updated.")
         else:
             order.items.add(order_item)
             messages.info(request, "Item was added to your cart.")
     else:
-        ordered_date = time.now()
+        ordered_date = timezone.now()
         order = Order.objects.create(
             user=request.user, ordered_date=ordered_date)
         order.items.add(order_item)
@@ -83,7 +101,6 @@ def add_to_cart(request, slug):
     # Redirect the user back to the previous page
     return redirect(previous_url)
 
-
 @login_required
 def remove_from_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
@@ -92,25 +109,25 @@ def remove_from_cart(request, slug):
         ordered=False)
     if order_qs.exists():
         order = order_qs[0]
+        
         # check if the order item is in the order
         if order.items.filter(item__slug=item.slug).exists():
             order_item = OrderItem.objects.filter(
                 item=item,
                 user=request.user,
                 ordered=False
-            )[0]
-            order.items.remove(order_item)
+            )
+            order_item.delete()
             messages.info(request, "Item was removed from your cart.")
             return redirect("CoreApp:cart")
         else:
             # add a message saying the user dosent have an order
             messages.info(request, "Item was not in your cart.")
-            return redirect("CoreApp:product", slug=slug)
+            return redirect("CoreApp:cart", slug=slug)
     else:
         # add a message saying the user dosent have an order
         messages.info(request, "u don't have an active order.")
-        return redirect("CoreApp:product", slug=slug)
-    return redirect("CoreApp:product", slug=slug)
+        return redirect("CoreApp:cart", slug=slug)
 
 
 @login_required
@@ -149,15 +166,3 @@ class SignUp(generic.CreateView):
     success_url = reverse_lazy('home')
     template_name = 'registration/signup.html'
 
-
-class OrderSummaryView(LoginRequiredMixin, View):
-    def get(self, *args, **kwargs):
-        try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            context = {
-                'object': order
-            }
-            return render(self.request, 'order_summary.html', context)
-        except ObjectDoesNotExist:
-            messages.error(self.request, "You do not have an active order")
-            return redirect("/")
