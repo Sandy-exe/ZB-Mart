@@ -37,9 +37,17 @@ class CategoryView(View):
             'category_image': category.image
         }
         return render(self.request, "category.html", context)
-class Cartview(ListView):
-    model = Item
-    template_name = "cart.html"
+class Cartview(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context = {
+                'object': order
+            }
+            return render(self.request, 'cart.html', context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an active order")
+            return redirect("/")
 
 
 @login_required
@@ -50,6 +58,7 @@ def add_to_cart(request, slug):
         user=request.user,
         ordered=False
     )
+    print(order_item)
     order_qs = Order.objects.filter(user=request.user, ordered=False)
     if order_qs.exists():
         order = order_qs[0]
@@ -57,18 +66,18 @@ def add_to_cart(request, slug):
             order_item.quantity += 1
             order_item.save()
             messages.info(request, "Item qty was updated.")
-            return redirect("core:order-summary")
+            return redirect("CoreApp:cart")
         else:
             order.items.add(order_item)
             messages.info(request, "Item was added to your cart.")
-            return redirect("core:order-summary")
+            return redirect("CoreApp:cart")
     else:
         ordered_date = time.now()
         order = Order.objects.create(
             user=request.user, ordered_date=ordered_date)
         order.items.add(order_item)
         messages.info(request, "Item was added to your cart.")
-    return redirect("core:order-summary")
+    return redirect("CoreApp:cart")
 
 
 @login_required
@@ -88,16 +97,16 @@ def remove_from_cart(request, slug):
             )[0]
             order.items.remove(order_item)
             messages.info(request, "Item was removed from your cart.")
-            return redirect("core:order-summary")
+            return redirect("CoreApp:cart")
         else:
             # add a message saying the user dosent have an order
             messages.info(request, "Item was not in your cart.")
-            return redirect("core:product", slug=slug)
+            return redirect("CoreApp:product", slug=slug)
     else:
         # add a message saying the user dosent have an order
         messages.info(request, "u don't have an active order.")
-        return redirect("core:product", slug=slug)
-    return redirect("core:product", slug=slug)
+        return redirect("CoreApp:product", slug=slug)
+    return redirect("CoreApp:product", slug=slug)
 
 
 @login_required
@@ -121,16 +130,16 @@ def remove_single_item_from_cart(request, slug):
             else:
                 order.items.remove(order_item)
             messages.info(request, "This item qty was updated.")
-            return redirect("core:order-summary")
+            return redirect("CoreApp:cart")
         else:
             # add a message saying the user dosent have an order
             messages.info(request, "Item was not in your cart.")
-            return redirect("core:product", slug=slug)
+            return redirect("CoreApp:product", slug=slug)
     else:
         # add a message saying the user dosent have an order
         messages.info(request, "u don't have an active order.")
-        return redirect("core:product", slug=slug)
-    return redirect("core:product", slug=slug)
+        return redirect("CoreApp:product", slug=slug)
+    return redirect("CoreApp:product", slug=slug)
 
 
 
@@ -139,3 +148,16 @@ class SignUp(generic.CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('home')
     template_name = 'registration/signup.html'
+
+
+class OrderSummaryView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context = {
+                'object': order
+            }
+            return render(self.request, 'order_summary.html', context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an active order")
+            return redirect("/")
