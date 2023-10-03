@@ -1,3 +1,0 @@
-Work:
-1) add to cart new product for the first time
-2) various products in same category
