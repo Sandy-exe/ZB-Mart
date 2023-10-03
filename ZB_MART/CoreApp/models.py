@@ -14,7 +14,7 @@ LABEL_CHOICES = (
 
 
 class Slide(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id_slide = models.IntegerField(primary_key=True)
     caption1 = models.CharField(max_length=100)
     caption2 = models.CharField(max_length=100)
     link = models.CharField(max_length=100)
@@ -25,7 +25,7 @@ class Slide(models.Model):
         return "{} - {}".format(self.caption1, self.caption2)
 
 class Category(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id_category = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=100)
     slug = models.SlugField()
     description = models.TextField()
@@ -42,7 +42,7 @@ class Category(models.Model):
 
 
 class Item(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id_Item = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=100)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
@@ -59,11 +59,11 @@ class Item(models.Model):
         return self.title
 
 class OrderItem(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id_orderItem = models.IntegerField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE,null=True)
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
@@ -82,10 +82,12 @@ class OrderItem(models.Model):
         if self.item.discount_price:
             return self.get_total_discount_item_price()
         return self.get_total_item_price()
+    
+
 
 
 class Order(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id_order = models.IntegerField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     ref_code = models.CharField(max_length=20)
@@ -102,5 +104,7 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += order_item.get_final_price()
         return total
+    
+    
 
 

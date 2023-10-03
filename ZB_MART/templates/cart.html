@@ -8,6 +8,8 @@
 		Cart
 	</h2>
 </section>
+
+{% if user.is_authenticated %}
 <div class="container">
 	<div class="row">
 		<div class="col-lg-12">
@@ -72,5 +74,8 @@
 		</div>
 	</div>
 </div>
+{% else %}
+ok
+{% endif %}
 
 {% endblock content %}
