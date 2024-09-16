@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render
 from django.urls import reverse_lazy,reverse
 from django.views import generic
@@ -77,6 +78,13 @@ class Cartview(LoginRequiredMixin, View):
             render(self.request, 'cart.html')
 
 
+def generate_unique_id(existing_ids):
+    # Generate a new unique id that doesn't conflict with existing_ids
+    while True:
+        new_id = random.randint(1, 1000000)  # Adjust the range as needed
+        if new_id not in existing_ids:
+            return new_id
+
 # @login_required
 def add_to_cart(request, slug):
     if request.user.is_authenticated:
@@ -101,7 +109,11 @@ def add_to_cart(request, slug):
                 messages.info(request, "Selected Item was added to your cart.")
         else:
             ordered_date = datetime.now()
-            order = Order.objects.create(id_order=1,
+            existing_ids = Order.objects.values_list('id_order', flat=True)
+
+            # Generate a unique id_order
+            unique_id = generate_unique_id(existing_ids)
+            order = Order.objects.create(id_order=unique_id,
                 user=request.user, ordered_date=ordered_date)
             messages.info(request, "New Item was added to your cart.")
             
